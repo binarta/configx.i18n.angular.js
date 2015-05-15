@@ -1,6 +1,6 @@
 angular.module('configx.i18n', ['i18n.gateways', 'config'])
     .factory('publicConfigReader', ['i18nMessageReader', 'config', PublicConfigReaderFactory])
-    .factory('publicConfigWriter', ['i18nMessageWriter', PublicConfigWriterFactory]);
+    .factory('publicConfigWriter', ['i18nMessageWriter', 'configWriter', PublicConfigWriterFactory]);
 
 function PublicConfigReaderFactory(reader, config) {
     return function (request, response) {
@@ -10,8 +10,15 @@ function PublicConfigReaderFactory(reader, config) {
     };
 }
 
-function PublicConfigWriterFactory(writer) {
+function PublicConfigWriterFactory(writer, configWriter) {
     return function(request, response) {
         writer({key:request.key, message:request.value}, response);
+
+        configWriter({
+            $scope:{},
+            key:request.key,
+            value: request.value,
+            scope: 'public'
+        });
     }
 }

@@ -1,5 +1,9 @@
 angular.module('config', [])
-    .factory('config', function() {return {namespace:'n'}});
+    .factory('config', function() {return {namespace:'n'}})
+    .factory('configWriter', function () {
+        return jasmine.createSpy('configWriter');
+    });
+
 angular.module('i18n.gateways', [])
     .factory('i18nMessageReader', function() {
         return jasmine.createSpy('i18nMessageReaderSpy');
@@ -18,11 +22,12 @@ describe('configx.i18n.js', function() {
     }));
 
     describe('given config value reader', function() {
-        var reader, writer, value, request, response;
+        var reader, writer, value, request, response, configWriter;
 
-        beforeEach(inject(function(publicConfigReader, publicConfigWriter) {
+        beforeEach(inject(function(publicConfigReader, publicConfigWriter, _configWriter_) {
             reader = publicConfigReader;
             writer = publicConfigWriter;
+            configWriter = _configWriter_;
         }));
 
         describe('reading', function() {
@@ -78,6 +83,13 @@ describe('configx.i18n.js', function() {
 
             it('write accepted', function() {
                 expect(output.calls[0].args[1]).toEqual(response);
+            });
+
+            it('delegates to configWriter', function () {
+                expect(configWriter.calls[0].args[0].$scope).toEqual({});
+                expect(configWriter.calls[0].args[0].key).toEqual('x');
+                expect(configWriter.calls[0].args[0].value).toEqual('a');
+                expect(configWriter.calls[0].args[0].scope).toEqual('public');
             });
         });
     });
