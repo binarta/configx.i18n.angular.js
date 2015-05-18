@@ -15,19 +15,20 @@ angular.module('i18n.gateways', [])
 describe('configx.i18n.js', function() {
     var query, output, provider;
 
-    beforeEach(module('configx.i18n'));
+    beforeEach(module('config.gateways'));
     beforeEach(inject(function(i18nMessageReader, i18nMessageWriter) {
         query = i18nMessageReader;
         output = i18nMessageWriter;
     }));
 
     describe('given config value reader', function() {
-        var reader, writer, value, request, response, configWriter;
+        var reader, writer, value, request, response, configWriter, $rootScope;
 
-        beforeEach(inject(function(publicConfigReader, publicConfigWriter, _configWriter_) {
+        beforeEach(inject(function(publicConfigReader, publicConfigWriter, _configWriter_, _$rootScope_) {
             reader = publicConfigReader;
             writer = publicConfigWriter;
             configWriter = _configWriter_;
+            $rootScope = _$rootScope_;
         }));
 
         describe('reading', function() {
@@ -40,10 +41,11 @@ describe('configx.i18n.js', function() {
                     notFound:function() {value = 'not found'},
                     error:function(it) {value = it}
                 };
-                reader(request, response);
             });
 
             it('delegates to i18n query channel', function() {
+                reader(request, response);
+
                 expect(query.calls[0].args[0]).toEqual({
                     namespace:'n',
                     code:'x',
@@ -52,18 +54,35 @@ describe('configx.i18n.js', function() {
             });
 
             it('known values', function() {
+                reader(request, response);
                 query.calls[0].args[1]('a');
+
                 expect(value).toEqual('a');
             });
 
             it('unknown values', function() {
+                reader(request, response);
                 query.calls[0].args[1]('???x???');
+
                 expect(value).toEqual('not found');
             });
 
             it('read error', function() {
+                reader(request, response);
                 query.calls[0].args[2]('read error');
+
                 expect(value).toEqual('read error');
+            });
+
+            it('returns a promise', function () {
+                var value;
+                reader(request, response).then(function (v) {
+                    value = v;
+                });
+                query.calls[0].args[1]('a');
+                $rootScope.$digest();
+
+                expect(value).toEqual('a');
             });
         });
 
@@ -74,22 +93,33 @@ describe('configx.i18n.js', function() {
                     value:'a'
                 };
                 response = 'response';
-                writer(request, response);
             });
 
             it('delegates to i18n output channel', function() {
+                writer(request, response);
+
                 expect(output.calls[0].args[0]).toEqual({key:'x', message:'a'});
             });
 
             it('write accepted', function() {
+                writer(request, response);
+
                 expect(output.calls[0].args[1]).toEqual(response);
             });
 
             it('delegates to configWriter', function () {
+                writer(request, response);
+
                 expect(configWriter.calls[0].args[0].$scope).toEqual({});
                 expect(configWriter.calls[0].args[0].key).toEqual('x');
                 expect(configWriter.calls[0].args[0].value).toEqual('a');
                 expect(configWriter.calls[0].args[0].scope).toEqual('public');
+            });
+
+            it('returns a promise', function () {
+                configWriter.andReturn({success: function () {}});
+
+                writer(request, response).success();
             });
         });
     });
