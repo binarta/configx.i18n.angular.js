@@ -12,7 +12,7 @@ function PublicConfigReaderFactory(reader, config, $q) {
 
         function onSuccess(it) {
             if(response && response.success) response.success(it);
-            deferred.resolve(it);
+            deferred.resolve({data: {value: it}});
         }
 
         function onReject() {

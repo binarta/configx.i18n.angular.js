@@ -86,7 +86,7 @@ describe('configx.i18n.js', function() {
                 query.calls[0].args[1]('a');
                 $rootScope.$digest();
 
-                expect(value).toEqual('a');
+                expect(value.data.value).toEqual('a');
             });
         });
 
