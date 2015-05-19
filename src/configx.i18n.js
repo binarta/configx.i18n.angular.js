@@ -31,7 +31,7 @@ function PublicConfigReaderFactory(reader, config, $q) {
 
 function PublicConfigWriterFactory(writer, configWriter) {
     return function(request, response) {
-        writer({key:request.key, message:request.value}, response);
+        writer({key:request.key, message:request.value, locale:'default'}, response);
 
         return configWriter({
             $scope:{},

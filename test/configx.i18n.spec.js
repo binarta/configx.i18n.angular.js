@@ -102,7 +102,7 @@ describe('configx.i18n.js', function() {
             it('delegates to i18n output channel', function() {
                 writer(request, response);
 
-                expect(output.calls[0].args[0]).toEqual({key:'x', message:'a'});
+                expect(output.calls[0].args[0]).toEqual({key:'x', message:'a', locale:'default'});
             });
 
             it('write accepted', function() {
