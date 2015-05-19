@@ -68,8 +68,12 @@ describe('configx.i18n.js', function() {
             });
 
             it('read error', function() {
-                reader(request, response);
+                reader(request, response).then(function () {}, function (data) {
+                    expect(data).toEqual('read error');
+                });
                 query.calls[0].args[2]('read error');
+
+                $rootScope.$digest();
 
                 expect(value).toEqual('read error');
             });

@@ -8,16 +8,21 @@ function PublicConfigReaderFactory(reader, config, $q) {
 
         reader({namespace:config.namespace, code:request.key, locale:'default'}, function (it) {
             it == '???' + request.key + '???' ? onReject() : onSuccess(it);
-        }, response.error);
+        }, onError);
 
         function onSuccess(it) {
-            response.success(it);
+            if(response && response.success) response.success(it);
             deferred.resolve(it);
         }
 
         function onReject() {
-            response.notFound();
+            if(response && response.notFound) response.notFound();
             deferred.reject();
+        }
+
+        function onError(data) {
+            if(response && response.error) response.error(data);
+            deferred.reject(data);
         }
 
         return deferred.promise;
