@@ -1,0 +1,5 @@
+{
+  "default": {
+    "configx.i18n":"bower_components/binarta.configx.i18n.angular/src/configx.i18n.js"
+  }
+}

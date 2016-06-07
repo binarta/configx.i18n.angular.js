@@ -46,7 +46,7 @@ describe('configx.i18n.js', function() {
             it('delegates to i18n query channel', function() {
                 reader(request, response);
 
-                expect(query.calls[0].args[0]).toEqual({
+                expect(query.calls.first().args[0]).toEqual({
                     namespace:'n',
                     code:'x',
                     locale:'default'
@@ -55,14 +55,14 @@ describe('configx.i18n.js', function() {
 
             it('known values', function() {
                 reader(request, response);
-                query.calls[0].args[1]('a');
+                query.calls.first().args[1]('a');
 
                 expect(value).toEqual('a');
             });
 
             it('unknown values', function() {
                 reader(request, response);
-                query.calls[0].args[1]('???x???');
+                query.calls.first().args[1]('???x???');
 
                 expect(value).toEqual('not found');
             });
@@ -71,7 +71,7 @@ describe('configx.i18n.js', function() {
                 reader(request, response).then(function () {}, function (data) {
                     expect(data).toEqual('read error');
                 });
-                query.calls[0].args[2]('read error');
+                query.calls.first().args[2]('read error');
 
                 $rootScope.$digest();
 
@@ -83,7 +83,7 @@ describe('configx.i18n.js', function() {
                 reader(request, response).then(function (v) {
                     value = v;
                 });
-                query.calls[0].args[1]('a');
+                query.calls.first().args[1]('a');
                 $rootScope.$digest();
 
                 expect(value.data.value).toEqual('a');
@@ -102,26 +102,26 @@ describe('configx.i18n.js', function() {
             it('delegates to i18n output channel', function() {
                 writer(request, response);
 
-                expect(output.calls[0].args[0]).toEqual({key:'x', message:'a', locale:'default'});
+                expect(output.calls.first().args[0]).toEqual({key:'x', message:'a', locale:'default'});
             });
 
             it('write accepted', function() {
                 writer(request, response);
 
-                expect(output.calls[0].args[1]).toEqual(response);
+                expect(output.calls.first().args[1]).toEqual(response);
             });
 
             it('delegates to configWriter', function () {
                 writer(request, response);
 
-                expect(configWriter.calls[0].args[0].$scope).toEqual({});
-                expect(configWriter.calls[0].args[0].key).toEqual('x');
-                expect(configWriter.calls[0].args[0].value).toEqual('a');
-                expect(configWriter.calls[0].args[0].scope).toEqual('public');
+                expect(configWriter.calls.first().args[0].$scope).toEqual({});
+                expect(configWriter.calls.first().args[0].key).toEqual('x');
+                expect(configWriter.calls.first().args[0].value).toEqual('a');
+                expect(configWriter.calls.first().args[0].scope).toEqual('public');
             });
 
             it('returns a promise', function () {
-                configWriter.andReturn({success: function () {}});
+                configWriter.and.returnValue({success: function () {}});
 
                 writer(request, response).success();
             });
